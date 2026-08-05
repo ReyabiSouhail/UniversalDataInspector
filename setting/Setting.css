@@ -1,0 +1,11 @@
+.udi-setting { padding: 10px; }
+.udi-setting h3 { margin: 0 0 6px; }
+.udi-setting-section { margin-bottom: 14px; }
+.udi-setting-sources { max-height: 220px; overflow: auto; border: 1px solid #ddd; padding: 8px; background: #fafafa; }
+.udi-setting-source { margin: 0 0 7px; padding-bottom: 7px; border-bottom: 1px solid #eee; }
+.udi-setting-source:last-child { border-bottom: 0; }
+.udi-setting-source-title { font-weight: 600; }
+.udi-setting-source-code { display: block; margin-top: 3px; font-family: Consolas, monospace; font-size: 11px; word-break: break-all; color: #555; }
+.udi-setting-editor { box-sizing: border-box; width: 100%; min-height: 430px; padding: 8px; font-family: Consolas, monospace; font-size: 12px; line-height: 1.4; }
+.udi-setting-validation { padding-top: 8px; color: #a80000; white-space: pre-wrap; }
+.udi-help { color: #666; font-size: 12px; }
