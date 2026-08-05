@@ -1,10 +1,8 @@
-<div class="jimu-widget-setting-universal-data-inspector">
-  <div class="udi-setting-note">${nls.instructions}</div>
-  <div class="udi-setting-actions">
-    <button class="jimu-btn" data-dojo-attach-event="onclick:_insertExample">${nls.insertExample}</button>
-    <button class="jimu-btn" data-dojo-attach-event="onclick:_validateConfig">${nls.validate}</button>
+<div class="udi-step1-setting">
+  <div class="udi-step1-setting-toolbar">
+    <button type="button" class="jimu-btn" data-dojo-attach-event="onclick:_refreshLayers">${nls.refreshLayers}</button>
+    <span class="udi-step1-setting-status" data-dojo-attach-point="statusNode"></span>
   </div>
-  <label class="udi-setting-label" for="udiConfigText">${nls.configuration}</label>
-  <textarea class="udi-config-editor" data-dojo-attach-point="configTextNode" id="udiConfigText"></textarea>
-  <div class="udi-validation" data-dojo-attach-point="validationNode"></div>
+  <div class="udi-step1-setting-help">${nls.helpText}</div>
+  <div class="udi-step1-setting-list" data-dojo-attach-point="layerListNode"></div>
 </div>

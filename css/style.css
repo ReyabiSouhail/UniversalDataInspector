@@ -1,15 +1,16 @@
-.jimu-widget-universal-data-inspector { height: 100%; overflow: auto; padding: 10px; box-sizing: border-box; }
-.jimu-widget-universal-data-inspector .udi-toolbar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
-.jimu-widget-universal-data-inspector .udi-status { padding: 8px; background: #f4f6f8; border-radius: 3px; margin-bottom: 10px; }
-.jimu-widget-universal-data-inspector .udi-error { color: #b42318; background: #fff1f0; }
-.jimu-widget-universal-data-inspector .udi-summary-card { border: 1px solid #d8dde3; border-radius: 5px; padding: 12px; margin-bottom: 12px; background: #fff; }
-.jimu-widget-universal-data-inspector h2 { font-size: 17px; margin: 0 0 5px; }
-.jimu-widget-universal-data-inspector h3 { font-size: 14px; margin: 10px 0 5px; }
-.jimu-widget-universal-data-inspector .udi-description { color: #555; }
-.jimu-widget-universal-data-inspector .udi-count { font-size: 12px; color: #666; margin-bottom: 8px; }
-.jimu-widget-universal-data-inspector .udi-result-item { border-top: 1px solid #eee; padding-top: 5px; }
-.jimu-widget-universal-data-inspector .udi-table { width: 100%; border-collapse: collapse; }
-.jimu-widget-universal-data-inspector .udi-table th, .jimu-widget-universal-data-inspector .udi-table td { text-align: left; padding: 5px; border-bottom: 1px solid #eee; vertical-align: top; }
-.jimu-widget-universal-data-inspector .udi-table th { width: 42%; font-weight: 600; }
-.jimu-widget-universal-data-inspector .udi-message { padding: 12px; color: #555; }
-.jimu-widget-universal-data-inspector .udi-message-error { color: #b42318; }
+.jimu-widget-universal-data-inspector-step1 {
+  height: 100%;
+  overflow: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+.udi-step1-header { margin-bottom: 14px; }
+.udi-step1-title { font-size: 18px; font-weight: 600; }
+.udi-step1-subtitle { color: #666; font-size: 12px; margin-top: 4px; }
+.udi-step1-empty, .udi-step1-count { padding: 12px; border: 1px solid #d9d9d9; background: #f7f7f7; border-radius: 3px; margin-bottom: 10px; }
+.udi-step1-layer-card { border: 1px solid #d9d9d9; border-radius: 3px; padding: 10px; margin-bottom: 10px; background: #fff; }
+.udi-step1-layer-title { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.udi-step1-row { display: flex; gap: 8px; margin: 4px 0; font-size: 12px; }
+.udi-step1-row-label { min-width: 95px; font-weight: 600; }
+.udi-step1-row-value { overflow-wrap: anywhere; flex: 1; }

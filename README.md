@@ -1,41 +1,43 @@
-# Universal Data Inspector
+# Universal Data Inspector — Step 1
 
-A classic ArcGIS Web AppBuilder 2D custom widget for ArcGIS Enterprise 10.9 / Web AppBuilder 2.19.
+This package implements the first milestone only: selecting one or more queryable sources from the current Web Map.
 
-## Esri conventions used
+## Target
 
-- `Widget.js` inherits `jimu/BaseWidget`.
-- `setting/Setting.js` inherits `jimu/BaseWidgetSetting`.
-- Runtime UI is stored in `Widget.html`.
-- Runtime styles are stored in `css/style.css`.
-- Runtime localization is stored in `nls/strings.js`.
-- Settings UI is stored in `setting/Setting.html`.
-- Settings styles are stored in `setting/css/style.css`.
-- Settings localization is stored in `setting/nls/strings.js`.
-- The folder name and manifest `name` are both `UniversalDataInspector`.
+- ArcGIS Enterprise 10.9.1
+- Web AppBuilder 2.21
+- ArcGIS API for JavaScript 3.x
+- 2D applications
 
-## Runtime behavior
+## Current functionality
 
-1. The user opens the widget and clicks the map.
-2. A marker is drawn immediately.
-3. Every configured source is queried around the clicked point.
-4. Fields from different layers are normalized using `fieldMap`.
-5. Administrator-defined conditions and ranking criteria are applied.
-6. Top 1 or Top N results are rendered in one summary panel.
-7. Selected geometries are highlighted.
+- Discovers FeatureLayer instances.
+- Discovers leaf sublayers from ArcGIS Dynamic Map Services.
+- Discovers standalone tables declared in the Web Map.
+- Loads REST metadata when it is not already available on the map layer.
+- Allows multiple layer selection in the widget settings.
+- Stores layer ID, title, URL, source type, geometry type, Object ID field, fields, capabilities, and maximum record count.
+- Restores saved selections when the settings page is reopened.
+- Displays the configured layer metadata in the runtime widget.
 
-## Installation in Developer Edition
+## Installation
 
 Copy the `UniversalDataInspector` folder to:
 
 `client/stemapp/widgets/UniversalDataInspector`
 
-Restart Web AppBuilder Developer Edition and add the widget from the widget gallery.
+Restart Web AppBuilder Developer Edition and create a new 2D application.
 
-## Portal registration
+## Test
 
-Host the complete folder on an anonymous HTTPS web server. Register the direct URL to `manifest.json` as an `Application Extension (AppBuilder)` item using a Portal administrator account.
+1. Add the widget.
+2. Open its settings.
+3. Click **Refresh layers**.
+4. Select one or more layers.
+5. Click **OK**.
+6. Reopen the widget settings and confirm the selection is preserved.
+7. Open the widget at runtime and verify that the selected layer metadata is displayed.
 
-## Configuration model
+## Next milestone
 
-See `examples/tower-rules.json` for a complete example. The administrator defines all business rules. The engine does not assume that highest, lowest, latest, or any specific text value is best.
+Step 2 will allow the administrator to choose fields from each selected layer.

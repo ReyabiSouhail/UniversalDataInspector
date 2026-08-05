@@ -1,8 +1,16 @@
-.jimu-widget-setting-universal-data-inspector { width: 100%; height: 100%; box-sizing: border-box; }
-.jimu-widget-setting-universal-data-inspector .udi-setting-note { padding: 10px; background: #eef6fb; border-left: 4px solid #007ac2; margin-bottom: 10px; }
-.jimu-widget-setting-universal-data-inspector .udi-setting-actions { margin-bottom: 8px; }
-.jimu-widget-setting-universal-data-inspector .udi-setting-actions .jimu-btn { margin-right: 6px; }
-.jimu-widget-setting-universal-data-inspector .udi-setting-label { display: block; font-weight: 600; margin-bottom: 5px; }
-.jimu-widget-setting-universal-data-inspector .udi-config-editor { width: 100%; height: 430px; resize: vertical; box-sizing: border-box; font-family: Consolas, monospace; font-size: 12px; padding: 8px; }
-.jimu-widget-setting-universal-data-inspector .udi-validation { padding-top: 8px; color: #2e7d32; }
-.jimu-widget-setting-universal-data-inspector .udi-validation-error { color: #b42318; }
+.jimu-widget-universal-data-inspector-step1-setting { height: 100%; overflow: auto; padding: 12px; box-sizing: border-box; font-family: Arial, sans-serif; }
+.udi-step1-setting-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.udi-step1-setting-status { color: #555; font-size: 12px; }
+.udi-step1-setting-status.is-error { color: #b42318; }
+.udi-step1-setting-help { padding: 10px; border: 1px solid #d9d9d9; background: #f7f7f7; margin-bottom: 10px; line-height: 1.4; }
+.udi-step1-setting-list { border: 1px solid #d9d9d9; max-height: 420px; overflow: auto; }
+.udi-step1-setting-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-bottom: 1px solid #ececec; cursor: pointer; }
+.udi-step1-setting-row:last-child { border-bottom: 0; }
+.udi-step1-setting-row:hover { background: #f5f8fb; }
+.udi-step1-setting-row input { margin-top: 3px; }
+.udi-step1-setting-row-content { display: flex; flex-direction: column; min-width: 0; }
+.udi-step1-setting-row-title { font-weight: 600; }
+.udi-step1-setting-row-meta { color: #666; font-size: 12px; margin-top: 3px; }
+.udi-step1-setting-row-error { color: #b42318; font-size: 12px; margin-top: 3px; }
+.udi-step1-setting-row-warning { background: #fff8e6; }
+.udi-step1-setting-empty { padding: 18px; color: #666; }

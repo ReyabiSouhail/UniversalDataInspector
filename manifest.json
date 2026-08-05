@@ -4,9 +4,9 @@
   "3D": false,
   "platform": "HTML",
   "version": "1.0.0",
-  "wabVersion": "2.19",
+  "wabVersion": "2.21",
   "author": "Reyabi Souhail",
-  "description": "Configurable multi-layer click summary widget with administrator-defined queries, ranking rules, Top N results, and HTML templates.",
+  "description": "Step 1: select one or more queryable layers from the current Web Map and store their metadata in the widget configuration.",
   "copyright": "Copyright 2026 Reyabi Souhail",
   "license": "Apache-2.0",
   "properties": {
@@ -19,7 +19,7 @@
     "hasSettingUIFile": true,
     "hasSettingLocale": true,
     "hasSettingStyle": true,
-    "keepConfigAfterMapSwitched": true,
+    "keepConfigAfterMapSwitched": false,
     "supportMultiInstance": true
   }
 }
