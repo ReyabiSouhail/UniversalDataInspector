@@ -3,7 +3,7 @@
   "2D": true,
   "3D": false,
   "platform": "HTML",
-  "version": "1.0",
+  "version": "5.0.1",
   "wabVersion": "2.19",
   "author": "Universal Data Inspector Project--CGI",
   "description": "A configurable multi-layer map-click summary widget with administrator-defined filters, rankings, Top N results, default templates, and custom HTML templates.",
