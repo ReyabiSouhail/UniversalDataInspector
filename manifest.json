@@ -1,17 +1,25 @@
 {
   "name": "UniversalDataInspector",
+  "2D": true,
+  "3D": false,
   "platform": "HTML",
-  "version": "4.0.0",
+  "version": "1.0",
   "wabVersion": "2.19",
-  "author": "REYABI SOUHAIL @CGI ",
-  "description": "Configuration-driven multi-layer summary and user-defined best-result rules for ArcGIS Web AppBuilder 2D.",
-  "copyright": "",
-  "license": "Apache-2.0",
+  "author": "REYABI SOUHAIL @CGI",
+  "description": "A configurable multi-layer map-click summary widget with administrator-defined filters, rankings, Top N results, default templates, and custom HTML templates.",
+  "copyright": "Copyright 2026 Universal Data Inspector Project",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
   "properties": {
     "inPanel": true,
     "hasLocale": true,
     "hasStyle": true,
     "hasConfig": true,
-    "hasSettingPage": true
+    "hasUIFile": true,
+    "hasSettingPage": true,
+    "hasSettingUIFile": true,
+    "hasSettingLocale": true,
+    "hasSettingStyle": true,
+    "keepConfigAfterMapSwitched": false,
+    "supportMultiInstance": true
   }
 }

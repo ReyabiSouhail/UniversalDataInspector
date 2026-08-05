@@ -1,7 +1,7 @@
 define({
-  clear: "Clear",
-  clickMap: "Click the map to inspect configured sources.",
-  loading: "Loading data…",
-  completed: "Completed",
-  failed: "Failed"
+  clear: "Effacer",
+  clickMap: "Cliquez sur la carte pour interroger les sources configurées.",
+  loading: "Chargement des données…",
+  completed: "Terminé",
+  failed: "Échec"
 });
