@@ -1,0 +1,110 @@
+{
+  "interaction": {
+    "inspectOnlyWhenOpen": true,
+    "tolerancePixels": 10
+  },
+  "marker": {
+    "enabled": true,
+    "color": [
+      0,
+      122,
+      194,
+      255
+    ],
+    "size": 16
+  },
+  "highlight": {
+    "enabled": true
+  },
+  "query": {
+    "defaultMaxRecords": 100,
+    "timeoutMs": 15000
+  },
+  "sources": [
+    {
+      "key": "tower_a",
+      "title": "Tower A",
+      "url": "https://server.example.com/arcgis/rest/services/TowersA/FeatureServer/0",
+      "where": "1=1",
+      "maxRecords": 100,
+      "returnGeometry": true,
+      "fieldMap": {
+        "speed": "SPEED",
+        "status": "STATUS",
+        "technology": "TECH"
+      },
+      "outFields": [
+        "OBJECTID",
+        "SPEED",
+        "STATUS",
+        "TECH"
+      ]
+    },
+    {
+      "key": "tower_b",
+      "title": "Tower B",
+      "url": "https://server.example.com/arcgis/rest/services/TowersB/FeatureServer/0",
+      "where": "1=1",
+      "maxRecords": 100,
+      "returnGeometry": true,
+      "fieldMap": {
+        "speed": "DOWNLOAD_RATE",
+        "status": "STATE",
+        "technology": "NETWORK"
+      },
+      "outFields": [
+        "OBJECTID",
+        "DOWNLOAD_RATE",
+        "STATE",
+        "NETWORK"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "best_active_tower",
+      "name": "Best active tower",
+      "sourceKeys": [
+        "tower_a",
+        "tower_b"
+      ],
+      "conditionLogic": "and",
+      "conditions": [
+        {
+          "field": "status",
+          "operator": "equals",
+          "value": "ACTIVE"
+        }
+      ],
+      "sort": [
+        {
+          "field": "technology",
+          "valueType": "priorityText",
+          "direction": "descending",
+          "priority": [
+            "5G",
+            "4G",
+            "3G",
+            "2G"
+          ]
+        },
+        {
+          "field": "speed",
+          "valueType": "number",
+          "direction": "descending"
+        }
+      ],
+      "take": 1,
+      "displayFields": [
+        "speed",
+        "status",
+        "technology"
+      ],
+      "templateMode": "default"
+    }
+  ],
+  "display": {
+    "emptyValue": "\u2014",
+    "defaultTitle": "Summary"
+  }
+}

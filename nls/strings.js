@@ -1,10 +1,13 @@
 define({
   root: {
-    clear: "Clear",
+    _widgetLabel: "Universal Data Inspector",
+    ready: "Ready.",
     clickMap: "Click the map to inspect configured sources.",
-    loading: "Loading data…",
-    completed: "Completed",
-    failed: "Failed"
+    loading: "Loading results...",
+    complete: "Summary complete.",
+    noResults: "No matching results.",
+    queryFailed: "The query could not be completed.",
+    clear: "Clear"
   },
-  fr: true
+  "fr": true
 });

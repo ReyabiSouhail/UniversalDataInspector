@@ -1,95 +1,86 @@
-define(["dojo/dom-construct", "../services/TemplateService"], function (domConstruct, TemplateService) {
-  "use strict";
+define(['dojo/_base/declare', 'dojo/dom-construct'], function(declare, domConstruct) {
+  'use strict';
 
-  /** Renders one summary card per user-defined rule. */
-  function SummaryRenderer(targetNode) {
-    this.targetNode = targetNode;
-    this.templateService = new TemplateService();
-  }
+  /** Renders rule summaries using either the safe default layout or administrator HTML. */
+  return declare(null, {
+    constructor: function(options) {
+      this.container = options.container;
+      this.emptyValue = options.emptyValue || '—';
+    },
 
-  SummaryRenderer.prototype.render = function (summaries, display) {
-    this.clear();
-    summaries = summaries || [];
-    display = display || {};
+    clear: function() { domConstruct.empty(this.container); },
 
-    if (!summaries.length) {
-      domConstruct.create("div", {
-        className: "udi-empty",
-        textContent: display.noResultText || "No summary rule is configured."
-      }, this.targetNode);
-      return;
-    }
+    renderError: function(message) {
+      this.clear();
+      domConstruct.create('div', { className: 'udi-message udi-message-error', innerHTML: this._escape(message) }, this.container);
+    },
 
-    summaries.forEach(function (summary) {
-      if (summary.templateMode === "custom" && summary.customTemplate) {
-        this._renderCustom(summary, display);
-      } else {
-        this._renderDefault(summary, display);
+    render: function(summaries) {
+      this.clear();
+      (summaries || []).forEach(function(summary) {
+        if (summary.templateMode === 'custom' && summary.customTemplate) {
+          var wrapper = domConstruct.create('div', { className: 'udi-custom-template' }, this.container);
+          wrapper.innerHTML = this._renderTemplate(summary.customTemplate, summary);
+        } else {
+          this._renderDefault(summary);
+        }
+      }, this);
+    },
+
+    _renderDefault: function(summary) {
+      var card = domConstruct.create('section', { className: 'udi-summary-card' }, this.container);
+      domConstruct.create('h2', { innerHTML: this._escape(summary.name) }, card);
+      if (summary.description) {
+        domConstruct.create('p', { className: 'udi-description', innerHTML: this._escape(summary.description) }, card);
       }
-    }, this);
-  };
+      domConstruct.create('div', {
+        className: 'udi-count',
+        innerHTML: this._escape(String(summary.candidateCount) + ' candidate(s)')
+      }, card);
+      if (!summary.selected.length) {
+        domConstruct.create('div', { className: 'udi-message', innerHTML: 'No matching result.' }, card);
+        return;
+      }
+      summary.selected.forEach(function(candidate, index) {
+        var item = domConstruct.create('div', { className: 'udi-result-item' }, card);
+        domConstruct.create('h3', {
+          innerHTML: this._escape((index + 1) + '. ' + candidate.sourceTitle)
+        }, item);
+        var table = domConstruct.create('table', { className: 'udi-table' }, item);
+        var fields = summary.displayFields.length ? summary.displayFields : Object.keys(candidate.values);
+        fields.forEach(function(field) {
+          var row = domConstruct.create('tr', {}, table);
+          domConstruct.create('th', { innerHTML: this._escape(field) }, row);
+          var value = candidate.values.hasOwnProperty(field) ? candidate.values[field] : candidate.attributes[field];
+          domConstruct.create('td', { innerHTML: this._escape(this._format(value)) }, row);
+        }, this);
+      }, this);
+    },
 
-  SummaryRenderer.prototype._renderDefault = function (summary, display) {
-    var card = domConstruct.create("section", { className: "udi-summary-card" }, this.targetNode);
-    domConstruct.create("div", { className: "udi-summary-kicker", textContent: "SUMMARY RULE" }, card);
-    domConstruct.create("h2", { textContent: summary.name }, card);
-    if (summary.description) { domConstruct.create("p", { className: "udi-summary-description", textContent: summary.description }, card); }
+    _renderTemplate: function(template, summary) {
+      var best = summary.selected[0] || { values: {}, attributes: {} };
+      var context = {
+        'summary.name': summary.name,
+        'summary.description': summary.description,
+        'summary.candidateCount': summary.candidateCount,
+        'best.sourceTitle': best.sourceTitle || '',
+        'best.sourceKey': best.sourceKey || ''
+      };
+      Object.keys(best.values || {}).forEach(function(key) { context['best.values.' + key] = best.values[key]; });
+      Object.keys(best.attributes || {}).forEach(function(key) { context['best.attributes.' + key] = best.attributes[key]; });
+      return String(template).replace(/{{\s*([^}]+?)\s*}}/g, function(match, path) {
+        return this._escape(this._format(context[path]));
+      }.bind(this));
+    },
 
-    if (!summary.best) {
-      domConstruct.create("div", { className: "udi-empty", textContent: summary.emptyText }, card);
-      return;
+    _format: function(value) {
+      return value === null || value === undefined || value === '' ? this.emptyValue : String(value);
+    },
+
+    _escape: function(value) {
+      return String(value === null || value === undefined ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
-
-    var hero = domConstruct.create("div", { className: "udi-summary-hero" }, card);
-    domConstruct.create("strong", { textContent: summary.best.sourceTitle }, hero);
-    domConstruct.create("span", {
-      textContent: summary.candidateCount + (summary.candidateCount === 1 ? " candidate" : " candidates")
-    }, hero);
-
-    var fields = summary.displayFields.length ? summary.displayFields : Object.keys(summary.best.values || {});
-    if (!fields.length) { fields = Object.keys(summary.best.attributes || {}).slice(0, Number(display.maxFields || 12)); }
-    var table = domConstruct.create("table", { className: "udi-table" }, card);
-    fields.forEach(function (field) {
-      var value = this._value(summary.best, field);
-      var row = domConstruct.create("tr", {}, table);
-      domConstruct.create("th", { textContent: field }, row);
-      domConstruct.create("td", { textContent: this._format(value, display.emptyValue || "—") }, row);
-    }, this);
-
-    if (summary.selected.length > 1) {
-      var list = domConstruct.create("ol", { className: "udi-ranked-list" }, card);
-      summary.selected.forEach(function (record) {
-        domConstruct.create("li", { textContent: record.sourceTitle }, list);
-      });
-    }
-  };
-
-  SummaryRenderer.prototype._renderCustom = function (summary, display) {
-    var data = {
-      summary: summary,
-      best: summary.best,
-      selected: summary.selected,
-      display: display
-    };
-    var html = this.templateService.render(summary.customTemplate, data, display.emptyValue || "—");
-    domConstruct.place(html, this.targetNode);
-  };
-
-  SummaryRenderer.prototype._value = function (record, field) {
-    if (record.values && Object.prototype.hasOwnProperty.call(record.values, field)) { return record.values[field]; }
-    return record.attributes ? record.attributes[field] : null;
-  };
-
-  SummaryRenderer.prototype._format = function (value, emptyValue) {
-    if (value === null || typeof value === "undefined" || value === "") { return emptyValue; }
-    if (typeof value === "number") { return value.toLocaleString(); }
-    var date = new Date(value);
-    if (typeof value !== "boolean" && !isNaN(date.getTime()) && /date|time/i.test(String(value)) === false && Number(value) > 100000000000) {
-      return date.toLocaleString();
-    }
-    return String(value);
-  };
-
-  SummaryRenderer.prototype.clear = function () { domConstruct.empty(this.targetNode); };
-  return SummaryRenderer;
+  });
 });
