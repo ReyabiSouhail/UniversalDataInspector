@@ -18,3 +18,13 @@
 .jimu-widget-universal-data-inspector .udi-empty { padding: 16px; text-align: center; color: #666; }
 .jimu-widget-universal-data-inspector.udi-loading .udi-status:after { content: ""; display: inline-block; width: 10px; height: 10px; margin-left: 6px; border: 2px solid #aaa; border-top-color: transparent; border-radius: 50%; animation: udi-spin .8s linear infinite; }
 @keyframes udi-spin { to { transform: rotate(360deg); } }
+
+/* Version 4 summary presentation */
+.udi-summary-card { margin: 10px 0 16px; border: 1px solid #d5d5d5; border-radius: 6px; background: #fff; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.udi-summary-card > h2, .udi-summary-card > p, .udi-summary-card > table, .udi-summary-card > ol, .udi-summary-card > .udi-empty { margin-left: 14px; margin-right: 14px; }
+.udi-summary-kicker { padding: 9px 14px; background: #f3f7fa; color: #4e6575; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.udi-summary-description { color: #666; line-height: 1.4; }
+.udi-summary-hero { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 14px; margin: 8px 0; background: #f7f7f7; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+.udi-summary-hero strong { font-size: 16px; }
+.udi-summary-hero span { color: #666; font-size: 12px; }
+.udi-ranked-list { padding-left: 32px; padding-bottom: 12px; }

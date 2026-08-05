@@ -1,10 +1,10 @@
 {
   "name": "UniversalDataInspector",
   "platform": "HTML",
-  "version": "2.0.0",
+  "version": "4.0.0",
   "wabVersion": "2.19",
-  "author": "REYABI SOUHAIL @CGI",
-  "description": "Fast, generic, configuration-driven multi-layer inspector for ArcGIS Web AppBuilder 2D.",
+  "author": "REYABI SOUHAIL @CGI ",
+  "description": "Configuration-driven multi-layer summary and user-defined best-result rules for ArcGIS Web AppBuilder 2D.",
   "copyright": "",
   "license": "Apache-2.0",
   "properties": {

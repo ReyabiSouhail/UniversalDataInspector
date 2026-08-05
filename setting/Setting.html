@@ -1,12 +1,55 @@
-<div class="udi-setting">
-  <div class="udi-setting-section">
-    <h3>Available map sources</h3>
-    <div data-dojo-attach-point="sourcesNode" class="udi-setting-sources"></div>
+<div class="udi-setting-root">
+  <div class="udi-setting-intro">
+    <h2>Universal Data Inspector</h2>
+    <p>Select map sources, map their fields to common names, then create your own filtering and ranking rules. The widget never imposes a definition of “best”.</p>
   </div>
-  <div class="udi-setting-section">
-    <h3>Widget configuration JSON</h3>
-    <p class="udi-help">Auto mode works immediately. For an advanced workflow, copy a source selector from the list and edit the steps.</p>
-    <textarea data-dojo-attach-point="configEditorNode" class="udi-setting-editor" spellcheck="false"></textarea>
-    <div data-dojo-attach-point="validationNode" class="udi-setting-validation"></div>
+
+  <div class="udi-setting-tabs">
+    <button class="udi-tab-button is-active" data-dojo-attach-event="onclick:_showSourcesTab">1. Sources</button>
+    <button class="udi-tab-button" data-dojo-attach-event="onclick:_showRulesTab">2. Rules</button>
+    <button class="udi-tab-button" data-dojo-attach-event="onclick:_showDisplayTab">3. Display</button>
+    <button class="udi-tab-button" data-dojo-attach-event="onclick:_showAdvancedTab">Advanced JSON</button>
   </div>
+
+  <section class="udi-setting-panel" data-dojo-attach-point="sourcesPanelNode">
+    <div class="udi-panel-heading">
+      <div>
+        <h3>Data sources</h3>
+        <p>Enable any layer or table from the current web map. Configure the fields that the rules and summary may use.</p>
+      </div>
+    </div>
+    <div data-dojo-attach-point="sourcesNode"></div>
+  </section>
+
+  <section class="udi-setting-panel is-hidden" data-dojo-attach-point="rulesPanelNode">
+    <div class="udi-panel-heading">
+      <div>
+        <h3>User-defined rules</h3>
+        <p>A rule filters candidates, sorts them using one or more criteria, and returns Top 1 or Top N.</p>
+      </div>
+      <button class="jimu-btn" data-dojo-attach-event="onclick:_addRule">Add rule</button>
+    </div>
+    <div data-dojo-attach-point="rulesNode"></div>
+  </section>
+
+  <section class="udi-setting-panel is-hidden" data-dojo-attach-point="displayPanelNode">
+    <h3>Map and display settings</h3>
+    <div class="udi-form-grid">
+      <label>Click tolerance (pixels)<input type="number" min="1" max="50" data-dojo-attach-point="toleranceNode"></label>
+      <label>Cache duration (milliseconds)<input type="number" min="0" data-dojo-attach-point="cacheNode"></label>
+      <label>Marker size<input type="number" min="4" max="50" data-dojo-attach-point="markerSizeNode"></label>
+      <label>Empty value<input type="text" data-dojo-attach-point="emptyValueNode"></label>
+    </div>
+    <label class="udi-check"><input type="checkbox" data-dojo-attach-point="highlightNode"> Highlight the winning feature from each rule</label>
+    <label class="udi-check"><input type="checkbox" data-dojo-attach-point="onlyWhenOpenNode"> Run only while the widget panel is open</label>
+  </section>
+
+  <section class="udi-setting-panel is-hidden" data-dojo-attach-point="advancedPanelNode">
+    <h3>Advanced JSON</h3>
+    <p>The visual editor writes this JSON. Advanced administrators may edit it directly.</p>
+    <textarea class="udi-config-editor" data-dojo-attach-point="configEditorNode"></textarea>
+    <button class="jimu-btn" data-dojo-attach-event="onclick:_applyAdvancedJson">Apply JSON to editor</button>
+  </section>
+
+  <div class="udi-validation" data-dojo-attach-point="validationNode"></div>
 </div>

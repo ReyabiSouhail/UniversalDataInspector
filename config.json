@@ -1,13 +1,13 @@
 {
   "interaction": {
     "inspectOnlyWhenOpen": true,
-    "autoOpenPanel": false,
-    "clearPreviousResult": true
+    "clearPreviousResult": true,
+    "tolerancePixels": 10
   },
   "marker": {
     "enabled": true,
     "color": [0, 122, 194, 255],
-    "size": 14,
+    "size": 16,
     "outlineColor": [255, 255, 255, 255],
     "outlineWidth": 2
   },
@@ -15,34 +15,19 @@
     "enabled": true,
     "lineColor": [0, 255, 255, 255],
     "fillColor": [0, 255, 255, 45],
-    "lineWidth": 3
+    "lineWidth": 3,
+    "pointSize": 18
   },
   "execution": {
     "cacheTtlMs": 60000,
-    "continueOnError": true,
     "maxConcurrentQueries": 8
   },
-  "workflow": [
-    {
-      "id": "identifyVisibleLayers",
-      "type": "autoIdentify",
-      "selectionMode": "all",
-      "tolerancePixels": 8,
-      "maxRecordsPerLayer": 3,
-      "returnGeometry": true,
-      "includeInvisible": false,
-      "output": "identified"
-    }
-  ],
+  "sources": [],
+  "rules": [],
   "display": {
-    "mode": "auto",
-    "input": "identified",
     "emptyValue": "—",
-    "noResultText": "No feature found at this location.",
-    "hideSystemFields": true,
-    "showLayerTitle": true,
-    "showRecordTitle": true,
-    "maxFieldsPerRecord": 50,
-    "highlight": true
+    "noResultText": "No matching feature was found at this location.",
+    "highlight": true,
+    "maxFields": 12
   }
 }
