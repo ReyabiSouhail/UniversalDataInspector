@@ -1,8 +1,19 @@
-<div class="udi-step1-setting">
-  <div class="udi-step1-setting-toolbar">
-    <button type="button" class="jimu-btn" data-dojo-attach-event="onclick:_refreshLayers">${nls.refreshLayers}</button>
-    <span class="udi-step1-setting-status" data-dojo-attach-point="statusNode"></span>
+<div>
+  <div class="udi-setting-section">
+    <div class="udi-setting-title">${nls.chooseLayers}</div>
+    <div class="udi-setting-help">${nls.chooseLayersHelp}</div>
+    <div class="udi-layer-chooser" data-dojo-attach-point="layerChooserDiv"></div>
+    <button class="jimu-btn udi-load-fields-button"
+      data-dojo-attach-point="loadFieldsButton"
+      data-dojo-attach-event="onclick:_onLoadFieldsClicked">
+      ${nls.loadFields}
+    </button>
   </div>
-  <div class="udi-step1-setting-help">${nls.helpText}</div>
-  <div class="udi-step1-setting-list" data-dojo-attach-point="layerListNode"></div>
+
+  <div class="udi-setting-section">
+    <div class="udi-setting-title">${nls.chooseFields}</div>
+    <div class="udi-setting-help">${nls.chooseFieldsHelp}</div>
+    <div data-dojo-attach-point="messageNode" class="udi-message"></div>
+    <div data-dojo-attach-point="fieldsNode" class="udi-fields-container"></div>
+  </div>
 </div>

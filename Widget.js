@@ -1,92 +1,68 @@
+///////////////////////////////////////////////////////////////////////////
+// Universal Data Inspector - Step 1
+// Based on the ArcGIS Web AppBuilder 2.21 AMD widget conventions.
+///////////////////////////////////////////////////////////////////////////
+
 define([
   'dojo/_base/declare',
-  'dojo/_base/lang',
-  'dojo/dom-construct',
-  'dojo/dom-class',
+  'dojo/_base/array',
+  'dojo/_base/html',
+  'dijit/_WidgetsInTemplateMixin',
   'jimu/BaseWidget'
-], function (
-  declare,
-  lang,
-  domConstruct,
-  domClass,
-  BaseWidget
-) {
-  'use strict';
+], function(declare, array, html, _WidgetsInTemplateMixin, BaseWidget) {
+  return declare([BaseWidget, _WidgetsInTemplateMixin], {
+    baseClass: 'jimu-widget-universal-data-inspector',
 
-  /**
-   * Runtime widget for Step 1.
-   *
-   * The runtime widget only displays the layers selected by the administrator.
-   * Layer discovery and selection are handled in the settings page.
-   */
-  return declare([BaseWidget], {
-    baseClass: 'jimu-widget-universal-data-inspector-step1',
-
-    postCreate: function () {
+    postCreate: function() {
       this.inherited(arguments);
-      this._renderConfiguredLayers();
-    },
-
-    onOpen: function () {
-      this._renderConfiguredLayers();
+      this._renderConfigurationSummary();
     },
 
     /**
-     * Renders the configured layer list without querying the services.
+     * Displays the layers and fields saved by the configuration page.
+     * Runtime querying will be added in the next project step.
      */
-    _renderConfiguredLayers: function () {
-      var layers = (this.config && this.config.selectedLayers) || [];
-      domConstruct.empty(this.contentNode);
+    _renderConfigurationSummary: function() {
+      html.empty(this.summaryNode);
+      var layers = this.config && this.config.selectedLayers || [];
 
       if (!layers.length) {
-        domConstruct.create('div', {
-          className: 'udi-step1-empty',
-          textContent: this.nls.noConfiguredLayers
-        }, this.contentNode);
+        this.summaryNode.innerHTML = '<div class="udi-empty">' +
+          this.nls.noLayersConfigured + '</div>';
         return;
       }
 
-      domConstruct.create('div', {
-        className: 'udi-step1-count',
-        textContent: lang.replace(this.nls.configuredLayerCount, [layers.length])
-      }, this.contentNode);
-
-      layers.forEach(lang.hitch(this, function (layerInfo) {
-        var card = domConstruct.create('div', {
-          className: 'udi-step1-layer-card'
-        }, this.contentNode);
-
-        domConstruct.create('div', {
-          className: 'udi-step1-layer-title',
-          textContent: layerInfo.title || layerInfo.id || this.nls.unnamedLayer
+      array.forEach(layers, function(layer) {
+        var card = html.create('div', { className: 'udi-layer-card' }, this.summaryNode);
+        html.create('div', {
+          className: 'udi-layer-title',
+          innerHTML: this._escape(layer.title || layer.id)
         }, card);
 
-        this._appendRow(card, this.nls.typeLabel, layerInfo.sourceType || 'Unknown');
-        this._appendRow(card, this.nls.geometryLabel, layerInfo.geometryType || this.nls.notAvailable);
-        this._appendRow(card, this.nls.objectIdLabel, layerInfo.objectIdField || this.nls.notAvailable);
-        this._appendRow(card, this.nls.fieldsLabel, String((layerInfo.fields || []).length));
+        var fields = layer.selectedFields || [];
+        html.create('div', {
+          className: 'udi-layer-meta',
+          innerHTML: fields.length + ' ' + this.nls.fieldsSelected
+        }, card);
 
-        if (layerInfo.url) {
-          domClass.add(card, 'udi-step1-has-url');
-          this._appendRow(card, this.nls.urlLabel, layerInfo.url);
+        if (fields.length) {
+          var list = html.create('ul', {}, card);
+          array.forEach(fields, function(field) {
+            html.create('li', {
+              innerHTML: this._escape(field.alias || field.name)
+            }, list);
+          }, this);
         }
-      }));
+      }, this);
     },
 
-    _appendRow: function (parentNode, label, value) {
-      var row = domConstruct.create('div', {
-        className: 'udi-step1-row'
-      }, parentNode);
-
-      domConstruct.create('span', {
-        className: 'udi-step1-row-label',
-        textContent: label
-      }, row);
-
-      domConstruct.create('span', {
-        className: 'udi-step1-row-value',
-        textContent: value
-      }, row);
+    _escape: function(value) {
+      return String(value === null || value === undefined ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
   });
 });

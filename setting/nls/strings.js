@@ -1,13 +1,16 @@
 define({
-  root: {
-    refreshLayers: 'Refresh layers',
-    helpText: 'Select one or more queryable sources from the current Web Map. The widget stores the source URL, geometry type, Object ID field, field definitions, capabilities, and maximum record count.',
-    loadingLayers: 'Loading Web Map layers...',
-    mapUnavailable: 'The map is not available in the settings page.',
-    layerDiscoveryFailed: 'Layer discovery failed. Check the browser console for details.',
-    layerCount: '{0} selectable source(s) found.',
-    fieldCount: '{0} field(s)',
-    noQueryableLayers: 'No queryable FeatureLayer, MapServer sublayer, or standalone table was found.'
-  },
-  fr: true
+  root: ({
+    chooseLayers: "1. Select layers",
+    chooseLayersHelp: "Choose one or more FeatureLayers from the current Web Map.",
+    loadFields: "Load selected layer fields",
+    chooseFields: "2. Select fields",
+    chooseFieldsHelp: "Choose the attributes that will be available to later query and summary steps.",
+    loadingFields: "Loading layer fields...",
+    noLayerSelected: "Select at least one layer, then click Load selected layer fields.",
+    fieldLoadError: "The selected layer fields could not be loaded. Check the browser console for details.",
+    noUrl: "No service URL",
+    selectAll: "Select all",
+    clearAll: "Clear all"
+  }),
+  "fr": 1
 });

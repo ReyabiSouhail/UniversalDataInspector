@@ -1,301 +1,305 @@
+///////////////////////////////////////////////////////////////////////////
+// Universal Data Inspector - configuration page
+// This module intentionally follows the same Web AppBuilder 2.21 pattern
+// used by the official Select widget supplied by the user.
+///////////////////////////////////////////////////////////////////////////
+
 define([
   'dojo/_base/declare',
   'dojo/_base/lang',
   'dojo/_base/array',
-  'dojo/Deferred',
-  'dojo/promise/all',
-  'dojo/dom-construct',
-  'dojo/dom-class',
+  'dojo/_base/html',
   'dojo/on',
-  'esri/request',
-  'jimu/BaseWidgetSetting'
-], function (
+  'dojo/promise/all',
+  'dijit/_WidgetsInTemplateMixin',
+  'jimu/BaseWidgetSetting',
+  'jimu/dijit/LayerChooserFromMap',
+  'jimu/dijit/LayerChooserFromMapLite',
+  'jimu/LayerInfos/LayerInfos'
+], function(
   declare,
   lang,
   array,
-  Deferred,
-  all,
-  domConstruct,
-  domClass,
+  html,
   on,
-  esriRequest,
-  BaseWidgetSetting
+  all,
+  _WidgetsInTemplateMixin,
+  BaseWidgetSetting,
+  LayerChooserFromMap,
+  LayerChooserFromMapLite,
+  LayerInfos
 ) {
-  'use strict';
+  return declare([BaseWidgetSetting, _WidgetsInTemplateMixin], {
+    baseClass: 'jimu-widget-universal-data-inspector-setting',
 
-  /**
-   * Web AppBuilder settings page for Step 1.
-   *
-   * Responsibilities:
-   *  - Discover selectable sources from the current Web Map.
-   *  - Load REST metadata for FeatureLayer and MapServer sublayers.
-   *  - Allow multiple selections.
-   *  - Persist the selected source metadata in config.selectedLayers.
-   */
-  return declare([BaseWidgetSetting], {
-    baseClass: 'jimu-widget-universal-data-inspector-step1-setting',
-
-    _sources: null,
-    _selectionByKey: null,
-    _ownedHandles: null,
-
-    postCreate: function () {
+    postCreate: function() {
       this.inherited(arguments);
-      this._sources = [];
-      this._selectionByKey = {};
-      this._ownedHandles = [];
+      this._fieldSelections = {};
+      this._layerMetadata = {};
+      this._createLayerChooser();
+      this._restoreConfiguredFields();
     },
 
-    startup: function () {
-      this.inherited(arguments);
-      this.setConfig(this.config || { selectedLayers: [] });
-      this._refreshLayers();
+    /**
+     * Creates the official lightweight Web AppBuilder layer chooser.
+     * Only leaf FeatureLayers from the current Web Map are displayed.
+     */
+    _createLayerChooser: function() {
+      var featureLayerFilter = LayerChooserFromMap.createFeaturelayerFilter(
+        null,
+        true,
+        false,
+        false
+      );
+
+      this.layerChooser = new LayerChooserFromMapLite({
+        customFilter: featureLayerFilter,
+        onlySelectLeafLayer: true,
+        onlyShowWebMapLayers: true,
+        layerState: this.config && this.config.layerState || {}
+      });
+
+      this.layerChooser.placeAt(this.layerChooserDiv);
+      this.layerChooser.startup();
     },
 
-    destroy: function () {
-      this._clearOwnedHandles();
-      this.inherited(arguments);
+    /**
+     * Restores previously saved field choices before layer metadata is loaded.
+     */
+    _restoreConfiguredFields: function() {
+      var layers = this.config && this.config.selectedLayers || [];
+      array.forEach(layers, function(layer) {
+        this._fieldSelections[layer.id] = {};
+        array.forEach(layer.selectedFields || [], function(field) {
+          this._fieldSelections[layer.id][field.name] = true;
+        }, this);
+      }, this);
     },
 
-    setConfig: function (config) {
-      var selectedLayers = (config && config.selectedLayers) || [];
-      this.config = lang.clone(config || { selectedLayers: [] });
-      this._selectionByKey = {};
-      array.forEach(selectedLayers, lang.hitch(this, function (item) {
-        this._selectionByKey[this._getSourceKey(item)] = true;
-      }));
+    _onLoadFieldsClicked: function() {
+      this._loadSelectedLayerFields();
     },
 
-    getConfig: function () {
-      var selectedLayers = array.filter(this._sources, lang.hitch(this, function (source) {
-        return this._selectionByKey[this._getSourceKey(source)] === true;
-      }));
+    /**
+     * Reads the chooser state, resolves selected LayerInfo objects, and loads
+     * each layer's field metadata through the official LayerInfos API.
+     */
+    _loadSelectedLayerFields: function() {
+      var state = this.layerChooser.getState();
+      var selectedIds = this._getSelectedLayerIds(state);
 
-      this.config = {
-        selectedLayers: array.map(selectedLayers, function (source) {
+      html.empty(this.fieldsNode);
+      this._setMessage(this.nls.loadingFields, false);
+
+      if (!selectedIds.length) {
+        this._setMessage(this.nls.noLayerSelected, true);
+        return;
+      }
+
+      var layerInfos = LayerInfos.getInstanceSync();
+      var promises = array.map(selectedIds, function(layerId) {
+        var layerInfo = layerInfos.getLayerInfoById(layerId);
+        if (!layerInfo) {
+          return null;
+        }
+
+        return layerInfo.getLayerObject().then(lang.hitch(this, function(layerObject) {
           return {
-            id: source.id,
-            title: source.title,
-            url: source.url,
-            sourceType: source.sourceType,
-            geometryType: source.geometryType || null,
-            objectIdField: source.objectIdField || null,
-            fields: source.fields || [],
-            capabilities: source.capabilities || null,
-            maxRecordCount: source.maxRecordCount || null,
-            parentLayerId: source.parentLayerId || null,
-            sublayerId: source.sublayerId !== undefined ? source.sublayerId : null
+            id: layerId,
+            title: layerInfo.title || layerInfo.name || layerId,
+            url: layerObject.url || '',
+            geometryType: layerObject.geometryType || '',
+            objectIdField: layerObject.objectIdField || '',
+            fields: layerObject.fields || []
           };
-        })
-      };
-      return this.config;
-    },
+        }));
+      }, this);
 
-    _refreshLayers: function () {
-      if (!this.map) {
-        this._setStatus(this.nls.mapUnavailable, true);
-        return;
-      }
+      promises = array.filter(promises, function(item) { return !!item; });
 
-      this._setStatus(this.nls.loadingLayers, false);
-      domConstruct.empty(this.layerListNode);
-
-      var discovered = this._discoverMapSources();
-      var metadataPromises = array.map(discovered, lang.hitch(this, function (source) {
-        return this._loadSourceMetadata(source);
-      }));
-
-      all(metadataPromises).then(lang.hitch(this, function (sources) {
-        this._sources = array.filter(sources, function (item) { return !!item; });
-        this._renderSources();
-        this._setStatus(lang.replace(this.nls.layerCount, [this._sources.length]), false);
-      }), lang.hitch(this, function (error) {
-        console.error('UniversalDataInspector: layer discovery failed.', error);
-        this._setStatus(this.nls.layerDiscoveryFailed, true);
+      all(promises).then(lang.hitch(this, function(results) {
+        this._layerMetadata = {};
+        array.forEach(results, function(metadata) {
+          this._layerMetadata[metadata.id] = metadata;
+          this._renderLayerFields(metadata);
+        }, this);
+        this._setMessage('', false);
+      }), lang.hitch(this, function(error) {
+        console.error('UniversalDataInspector field loading failed.', error);
+        this._setMessage(this.nls.fieldLoadError, true);
       }));
     },
 
-    _discoverMapSources: function () {
-      var results = [];
-      var seen = {};
-      var layerIds = (this.map.layerIds || []).concat(this.map.graphicsLayerIds || []);
-
-      array.forEach(layerIds, lang.hitch(this, function (layerId) {
-        var layer = this.map.getLayer(layerId);
-        if (!layer) { return; }
-
-        if (layer.declaredClass === 'esri.layers.FeatureLayer') {
-          this._pushUnique(results, seen, {
-            id: layer.id,
-            title: layer.name || layer.title || layer.id,
-            url: layer.url || null,
-            sourceType: 'FeatureLayer',
-            geometryType: layer.geometryType || null,
-            objectIdField: layer.objectIdField || null,
-            fields: this._normalizeFields(layer.fields || []),
-            capabilities: layer.capabilities || null,
-            maxRecordCount: layer.maxRecordCount || null
-          });
-          return;
+    /**
+     * LayerChooserFromMapLite stores selection state by layer id. A layer is
+     * considered selected only when its state explicitly contains selected=true.
+     */
+    _getSelectedLayerIds: function(state) {
+      var ids = [];
+      Object.keys(state || {}).forEach(function(layerId) {
+        if (state[layerId] && state[layerId].selected === true) {
+          ids.push(layerId);
         }
-
-        if (layer.url && layer.layerInfos && layer.layerInfos.length) {
-          array.forEach(layer.layerInfos, lang.hitch(this, function (layerInfo) {
-            if (layerInfo.subLayerIds && layerInfo.subLayerIds.length) { return; }
-            this._pushUnique(results, seen, {
-              id: layer.id + '_' + layerInfo.id,
-              title: (layer.name || layer.id) + ' / ' + layerInfo.name,
-              url: layer.url.replace(/\/$/, '') + '/' + layerInfo.id,
-              sourceType: 'MapServerSublayer',
-              parentLayerId: layer.id,
-              sublayerId: layerInfo.id
-            });
-          }));
-        }
-      }));
-
-      var tables = this.map.webMapResponse &&
-        this.map.webMapResponse.itemInfo &&
-        this.map.webMapResponse.itemInfo.itemData &&
-        this.map.webMapResponse.itemInfo.itemData.tables;
-
-      array.forEach(tables || [], lang.hitch(this, function (tableInfo, index) {
-        if (!tableInfo.url) { return; }
-        this._pushUnique(results, seen, {
-          id: tableInfo.id || ('table_' + index),
-          title: tableInfo.title || tableInfo.name || ('Table ' + (index + 1)),
-          url: tableInfo.url,
-          sourceType: 'Table'
-        });
-      }));
-
-      return results;
-    },
-
-    _pushUnique: function (results, seen, source) {
-      var key = this._getSourceKey(source);
-      if (!seen[key]) {
-        seen[key] = true;
-        results.push(source);
-      }
-    },
-
-    _loadSourceMetadata: function (source) {
-      var deferred = new Deferred();
-
-      if (source.fields && source.fields.length) {
-        deferred.resolve(source);
-        return deferred.promise;
-      }
-      if (!source.url) {
-        deferred.resolve(source);
-        return deferred.promise;
-      }
-
-      esriRequest({
-        url: source.url,
-        content: { f: 'json' },
-        handleAs: 'json',
-        callbackParamName: 'callback'
-      }).then(lang.hitch(this, function (metadata) {
-        if (metadata && metadata.error) {
-          source.metadataError = metadata.error.message || 'Metadata request failed.';
-          deferred.resolve(source);
-          return;
-        }
-        source.title = source.title || metadata.name || source.id;
-        source.geometryType = metadata.geometryType || null;
-        source.objectIdField = metadata.objectIdField || metadata.objectIdFieldName || null;
-        source.fields = this._normalizeFields(metadata.fields || []);
-        source.capabilities = metadata.capabilities || null;
-        source.maxRecordCount = metadata.maxRecordCount || null;
-        deferred.resolve(source);
-      }), function (error) {
-        source.metadataError = error && error.message ? error.message : 'Metadata request failed.';
-        deferred.resolve(source);
       });
-      return deferred.promise;
+      return ids;
     },
 
-    _normalizeFields: function (fields) {
-      return array.map(fields || [], function (field) {
-        return {
-          name: field.name,
-          alias: field.alias || field.name,
-          type: field.type,
-          nullable: field.nullable !== false,
-          editable: field.editable === true,
-          length: field.length || null,
-          domain: field.domain || null
-        };
-      });
-    },
+    /**
+     * Creates native checkbox controls for every field in one selected layer.
+     * Native controls reduce dependencies and make the settings page robust.
+     */
+    _renderLayerFields: function(metadata) {
+      var card = html.create('div', { className: 'udi-field-card' }, this.fieldsNode);
+      html.create('div', {
+        className: 'udi-field-card-title',
+        innerHTML: this._escape(metadata.title)
+      }, card);
+      html.create('div', {
+        className: 'udi-field-card-url',
+        innerHTML: this._escape(metadata.url || this.nls.noUrl)
+      }, card);
 
-    _renderSources: function () {
-      domConstruct.empty(this.layerListNode);
-      this._clearOwnedHandles();
+      var toolbar = html.create('div', { className: 'udi-field-toolbar' }, card);
+      var selectAll = html.create('button', {
+        className: 'jimu-btn udi-small-button',
+        innerHTML: this.nls.selectAll,
+        type: 'button'
+      }, toolbar);
+      var clearAll = html.create('button', {
+        className: 'jimu-btn udi-small-button',
+        innerHTML: this.nls.clearAll,
+        type: 'button'
+      }, toolbar);
+      var list = html.create('div', { className: 'udi-field-list' }, card);
 
-      if (!this._sources.length) {
-        domConstruct.create('div', {
-          className: 'udi-step1-setting-empty',
-          textContent: this.nls.noQueryableLayers
-        }, this.layerListNode);
-        return;
-      }
+      this._fieldSelections[metadata.id] = this._fieldSelections[metadata.id] || {};
+      var checkboxNodes = [];
 
-      array.forEach(this._sources, lang.hitch(this, function (source) {
-        var key = this._getSourceKey(source);
-        var row = domConstruct.create('label', { className: 'udi-step1-setting-row' }, this.layerListNode);
-        var checkbox = domConstruct.create('input', {
+      array.forEach(metadata.fields, function(field) {
+        var row = html.create('label', { className: 'udi-field-row' }, list);
+        var checkbox = html.create('input', {
           type: 'checkbox',
-          checked: this._selectionByKey[key] === true
+          checked: !!this._fieldSelections[metadata.id][field.name]
         }, row);
-        var textContainer = domConstruct.create('span', { className: 'udi-step1-setting-row-content' }, row);
-        domConstruct.create('span', {
-          className: 'udi-step1-setting-row-title',
-          textContent: source.title || source.id
-        }, textContainer);
-        domConstruct.create('span', {
-          className: 'udi-step1-setting-row-meta',
-          textContent: this._buildMetadataText(source)
-        }, textContainer);
+        checkboxNodes.push(checkbox);
 
-        if (source.metadataError) {
-          domClass.add(row, 'udi-step1-setting-row-warning');
-          domConstruct.create('span', {
-            className: 'udi-step1-setting-row-error',
-            textContent: source.metadataError
-          }, textContainer);
+        html.create('span', {
+          className: 'udi-field-label',
+          innerHTML: this._escape(field.alias || field.name)
+        }, row);
+        html.create('span', {
+          className: 'udi-field-name',
+          innerHTML: this._escape(field.name)
+        }, row);
+
+        this.own(on(checkbox, 'change', lang.hitch(this, function() {
+          this._fieldSelections[metadata.id][field.name] = checkbox.checked;
+        })));
+      }, this);
+
+      this.own(on(selectAll, 'click', lang.hitch(this, function() {
+        array.forEach(metadata.fields, function(field, index) {
+          this._fieldSelections[metadata.id][field.name] = true;
+          checkboxNodes[index].checked = true;
+        }, this);
+      })));
+
+      this.own(on(clearAll, 'click', lang.hitch(this, function() {
+        array.forEach(metadata.fields, function(field, index) {
+          this._fieldSelections[metadata.id][field.name] = false;
+          checkboxNodes[index].checked = false;
+        }, this);
+      })));
+    },
+
+    setConfig: function(config) {
+      this.config = config || { layerState: {}, selectedLayers: [] };
+      this._fieldSelections = {};
+      this._restoreConfiguredFields();
+
+      if (this.layerChooser && this.config.layerState) {
+        this.layerChooser.restoreState(this.config.layerState);
+      }
+    },
+
+    /**
+     * Returns a serializable widget configuration. Web AppBuilder calls this
+     * method when the administrator clicks OK in the settings dialog.
+     */
+    getConfig: function() {
+      var layerState = this.layerChooser.getState();
+      var selectedIds = this._getSelectedLayerIds(layerState);
+      var selectedLayers = [];
+
+      array.forEach(selectedIds, function(layerId) {
+        var metadata = this._layerMetadata[layerId];
+        if (!metadata) {
+          // Keep the previous metadata when the user did not reload fields.
+          metadata = this._findExistingLayer(layerId);
+        }
+        if (!metadata) {
+          return;
         }
 
-        this._ownedHandles.push(on(checkbox, 'change', lang.hitch(this, function () {
-          this._selectionByKey[key] = checkbox.checked;
-        })));
-      }));
+        var selectedFields = array.filter(metadata.fields || [], function(field) {
+          return this._fieldSelections[layerId] &&
+            this._fieldSelections[layerId][field.name] === true;
+        }, this);
+
+        selectedLayers.push({
+          id: metadata.id,
+          title: metadata.title,
+          url: metadata.url,
+          geometryType: metadata.geometryType,
+          objectIdField: metadata.objectIdField,
+          selectedFields: array.map(selectedFields, function(field) {
+            return {
+              name: field.name,
+              alias: field.alias || field.name,
+              type: field.type || ''
+            };
+          })
+        });
+      }, this);
+
+      return {
+        layerState: layerState,
+        selectedLayers: selectedLayers
+      };
     },
 
-    _buildMetadataText: function (source) {
-      var parts = [source.sourceType || 'Unknown'];
-      if (source.geometryType) { parts.push(source.geometryType); }
-      parts.push(lang.replace(this.nls.fieldCount, [(source.fields || []).length]));
-      return parts.join(' • ');
-    },
-
-    _getSourceKey: function (source) {
-      return source.url || source.id || source.title;
-    },
-
-    _setStatus: function (message, isError) {
-      if (!this.statusNode) { return; }
-      this.statusNode.textContent = message || '';
-      domClass.toggle(this.statusNode, 'is-error', !!isError);
-    },
-
-    _clearOwnedHandles: function () {
-      array.forEach(this._ownedHandles || [], function (handle) {
-        if (handle && handle.remove) { handle.remove(); }
+    _findExistingLayer: function(layerId) {
+      var layers = this.config && this.config.selectedLayers || [];
+      var match = null;
+      array.some(layers, function(layer) {
+        if (layer.id === layerId) {
+          match = {
+            id: layer.id,
+            title: layer.title,
+            url: layer.url,
+            geometryType: layer.geometryType,
+            objectIdField: layer.objectIdField,
+            fields: layer.selectedFields || []
+          };
+          return true;
+        }
+        return false;
       });
-      this._ownedHandles = [];
+      return match;
+    },
+
+    _setMessage: function(message, isError) {
+      this.messageNode.innerHTML = this._escape(message || '');
+      html.toggleClass(this.messageNode, 'error', !!isError);
+    },
+
+    _escape: function(value) {
+      return String(value === null || value === undefined ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
   });
 });

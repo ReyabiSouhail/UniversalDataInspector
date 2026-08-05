@@ -1,14 +1,7 @@
 define({
-  _widgetLabel: 'Universal Data Inspector',
-  widgetTitle: 'Selected layers',
-  widgetSubtitle: 'Layers configured by the application administrator.',
-  noConfiguredLayers: 'No layers have been selected. Open the widget settings to select one or more Web Map layers.',
-  configuredLayerCount: '{0} layer(s) configured.',
-  unnamedLayer: 'Unnamed layer',
-  typeLabel: 'Source type',
-  geometryLabel: 'Geometry',
-  objectIdLabel: 'Object ID',
-  fieldsLabel: 'Fields',
-  urlLabel: 'URL',
-  notAvailable: 'Not available'
+  _widgetLabel: "Universal Data Inspector",
+  runtimeTitle: "Sources de données configurées",
+  runtimeHelp: "Cette première version enregistre les couches et champs sélectionnés.",
+  noLayersConfigured: "Aucune couche configurée. Ouvrez d’abord les paramètres du widget.",
+  fieldsSelected: "champ(s) sélectionné(s)"
 });

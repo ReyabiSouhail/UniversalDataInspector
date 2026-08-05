@@ -1,16 +1,18 @@
-.jimu-widget-universal-data-inspector-step1-setting { height: 100%; overflow: auto; padding: 12px; box-sizing: border-box; font-family: Arial, sans-serif; }
-.udi-step1-setting-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.udi-step1-setting-status { color: #555; font-size: 12px; }
-.udi-step1-setting-status.is-error { color: #b42318; }
-.udi-step1-setting-help { padding: 10px; border: 1px solid #d9d9d9; background: #f7f7f7; margin-bottom: 10px; line-height: 1.4; }
-.udi-step1-setting-list { border: 1px solid #d9d9d9; max-height: 420px; overflow: auto; }
-.udi-step1-setting-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-bottom: 1px solid #ececec; cursor: pointer; }
-.udi-step1-setting-row:last-child { border-bottom: 0; }
-.udi-step1-setting-row:hover { background: #f5f8fb; }
-.udi-step1-setting-row input { margin-top: 3px; }
-.udi-step1-setting-row-content { display: flex; flex-direction: column; min-width: 0; }
-.udi-step1-setting-row-title { font-weight: 600; }
-.udi-step1-setting-row-meta { color: #666; font-size: 12px; margin-top: 3px; }
-.udi-step1-setting-row-error { color: #b42318; font-size: 12px; margin-top: 3px; }
-.udi-step1-setting-row-warning { background: #fff8e6; }
-.udi-step1-setting-empty { padding: 18px; color: #666; }
+.jimu-widget-universal-data-inspector-setting { height: 100%; overflow: auto; padding: 4px 8px 18px; box-sizing: border-box; }
+.jimu-widget-universal-data-inspector-setting .udi-setting-section { margin-bottom: 24px; }
+.jimu-widget-universal-data-inspector-setting .udi-setting-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.jimu-widget-universal-data-inspector-setting .udi-setting-help { color: #666; margin-bottom: 10px; line-height: 1.4; }
+.jimu-widget-universal-data-inspector-setting .udi-layer-chooser { min-height: 180px; border: 1px solid #d9d9d9; margin-bottom: 10px; overflow: auto; }
+.jimu-widget-universal-data-inspector-setting .udi-load-fields-button { min-width: 180px; }
+.jimu-widget-universal-data-inspector-setting .udi-message { min-height: 20px; margin-bottom: 8px; color: #555; }
+.jimu-widget-universal-data-inspector-setting .udi-message.error { color: #b00020; }
+.jimu-widget-universal-data-inspector-setting .udi-field-card { border: 1px solid #d5d5d5; border-radius: 3px; padding: 12px; margin-bottom: 12px; background: #fff; }
+.jimu-widget-universal-data-inspector-setting .udi-field-card-title { font-weight: 600; font-size: 15px; }
+.jimu-widget-universal-data-inspector-setting .udi-field-card-url { color: #777; font-size: 11px; word-break: break-all; margin: 3px 0 9px; }
+.jimu-widget-universal-data-inspector-setting .udi-field-toolbar { margin-bottom: 8px; }
+.jimu-widget-universal-data-inspector-setting .udi-small-button { min-width: 90px; padding: 5px 10px; margin-right: 6px; }
+.jimu-widget-universal-data-inspector-setting .udi-field-list { max-height: 250px; overflow: auto; border-top: 1px solid #eee; }
+.jimu-widget-universal-data-inspector-setting .udi-field-row { display: flex; align-items: center; min-height: 32px; border-bottom: 1px solid #eee; cursor: pointer; }
+.jimu-widget-universal-data-inspector-setting .udi-field-row input { margin: 0 9px 0 2px; }
+.jimu-widget-universal-data-inspector-setting .udi-field-label { flex: 1; }
+.jimu-widget-universal-data-inspector-setting .udi-field-name { color: #888; font-family: monospace; font-size: 11px; margin-left: 10px; }

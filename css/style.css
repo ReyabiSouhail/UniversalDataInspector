@@ -1,16 +1,8 @@
-.jimu-widget-universal-data-inspector-step1 {
-  height: 100%;
-  overflow: auto;
-  padding: 12px;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-.udi-step1-header { margin-bottom: 14px; }
-.udi-step1-title { font-size: 18px; font-weight: 600; }
-.udi-step1-subtitle { color: #666; font-size: 12px; margin-top: 4px; }
-.udi-step1-empty, .udi-step1-count { padding: 12px; border: 1px solid #d9d9d9; background: #f7f7f7; border-radius: 3px; margin-bottom: 10px; }
-.udi-step1-layer-card { border: 1px solid #d9d9d9; border-radius: 3px; padding: 10px; margin-bottom: 10px; background: #fff; }
-.udi-step1-layer-title { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
-.udi-step1-row { display: flex; gap: 8px; margin: 4px 0; font-size: 12px; }
-.udi-step1-row-label { min-width: 95px; font-weight: 600; }
-.udi-step1-row-value { overflow-wrap: anywhere; flex: 1; }
+.jimu-widget-universal-data-inspector { padding: 12px; overflow: auto; }
+.jimu-widget-universal-data-inspector .udi-runtime-header { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.jimu-widget-universal-data-inspector .udi-runtime-help { color: #666; margin-bottom: 14px; }
+.jimu-widget-universal-data-inspector .udi-layer-card { border: 1px solid #d9d9d9; border-radius: 3px; padding: 10px; margin-bottom: 10px; background: #fff; }
+.jimu-widget-universal-data-inspector .udi-layer-title { font-weight: 600; margin-bottom: 4px; }
+.jimu-widget-universal-data-inspector .udi-layer-meta { color: #666; font-size: 12px; }
+.jimu-widget-universal-data-inspector ul { margin: 8px 0 0 20px; padding: 0; }
+.jimu-widget-universal-data-inspector .udi-empty { padding: 14px; background: #f5f5f5; border: 1px solid #ddd; }
